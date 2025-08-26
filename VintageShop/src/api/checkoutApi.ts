@@ -1,11 +1,15 @@
 import axios from 'axios'
 import type { ProductDetailDTO } from '@/types/productDetailDTO'
+import type { Voucher } from '@/types/voucher'
 import type { CheckoutRequest, InvoiceInfo, InputCartItem } from '@/types/checkoutRequest'
 
 import type { UserDTO } from '@/types/userDTO'
 const API_URL = 'http://localhost:8080/api/checkout'
 
-// Lấy thông tin product detail theo productDetailCode
+//lấy thông tin voucher theo mã
+export const getVoucherByCode = (code: string) =>
+  axios.get<Voucher>(`${API_URL}/get-voucher`, { params: { code } })
+
 export const getProductDetailByCode = (productDetailCode: string) =>
   axios.get<ProductDetailDTO>(`${API_URL}/get-product-detail`, { params: { productDetailCode } })
 

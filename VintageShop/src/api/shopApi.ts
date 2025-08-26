@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ProductInfo } from '@/types/ProductInfo'
+import type { ProductInfo } from '@/types/productInfo'
 import type { Category } from '@/types/productDTO'
 
 const API_URL = 'http://localhost:8080/api/shop'

@@ -43,7 +43,19 @@
           title="Hóa đơn"
           @click="router.push({ name: 'invoice-index' })"
         ></v-list-item>
-        <v-list-item prepend-icon="mdi-account-group-outline" title="Users"></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-shape-plus-outline"
+          title="Danh mục"
+          @click="router.push({ name: 'category-index' })"
+        ></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-tag-multiple"
+          title="Voucher"
+          @click="router.push({ name: 'voucher-index' })"
+        ></v-list-item>
+        <v-list-item prepend-icon="mdi-account-group-outline" title="Users"
+        @click="router.push({ name: 'user-index' })"
+        ></v-list-item>
         <v-divider></v-divider>
         <v-list-item
           prepend-icon="mdi-web"

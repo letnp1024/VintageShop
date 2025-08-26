@@ -64,36 +64,6 @@
           ></v-text-field>
         </v-col>
       </v-row>
-
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field
-            density="compact"
-            variant="plain"
-            prepend-icon="mdi-pencil"
-            v-model="password"
-            :readonly="loading"
-            :rules="[required, passwordRule]"
-            label="Mật khẩu"
-            type="password"
-            clearable
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            density="compact"
-            variant="plain"
-            prepend-icon="mdi-pencil"
-            v-model="confirmPassword"
-            :readonly="loading"
-            :rules="[required, confirmPasswordRule]"
-            label="Xác nhận mật khẩu"
-            type="password"
-            clearable
-          ></v-text-field>
-        </v-col>
-      </v-row>
-
       <v-row>
         <v-col cols="12">
           <v-text-field
@@ -111,7 +81,7 @@
 
       <v-row>
         <v-col cols="12">
-          <v-radio-group v-model="gender" :rules="[required]" label="Giới tính" inline>
+          <v-radio-group v-model="gender" label="Giới tính" inline>
             <v-radio :value="true" label="Nam" class="mr-10"></v-radio>
             <v-radio :value="false" label="Nữ" class="ml-10"></v-radio>
           </v-radio-group>
@@ -121,7 +91,6 @@
       <br />
 
       <v-btn
-        :disabled="!form"
         :loading="loading"
         color="primary"
         size="large"
@@ -134,8 +103,9 @@
   </v-card>
 </template>
 <script setup>
-import { ref } from 'vue'
 
+import { ref, onMounted } from 'vue'
+import { getProfile, updateProfile } from '@/api/accountApi'
 const form = ref(false)
 const username = ref('')
 const fullname = ref('')
@@ -147,28 +117,53 @@ const address = ref('')
 const gender = ref(null)
 const loading = ref(false)
 
-function onSubmit() {
+onMounted(async () => {
+  loading.value = true
+  try {
+    const res = await getProfile()
+    const user = res.data
+    username.value = user.username || ''
+    fullname.value = user.fullname || ''
+    email.value = user.email || ''
+    phonenumber.value = user.phonenumber || ''
+    address.value = user.address || ''
+    gender.value = user.gender ?? null
+    // Không set password khi fetch profile
+  } catch (error) {
+    console.error('Lỗi lấy thông tin người dùng:', error)
+  }
+  loading.value = false
+})
+
+async function onSubmit() {
   if (!form.value) return
 
   const userData = {
-    username: username.value,
     fullname: fullname.value,
     email: email.value,
     phonenumber: phonenumber.value,
     password: password.value,
     address: address.value,
     gender: gender.value,
-    // role sẽ được set mặc định ở backend (user role)
-    // registrationdate sẽ được set ở backend
-    // status mặc định là 0 (chưa verify email)
   }
 
   loading.value = true
-
-  // TODO: Gọi API đăng ký
-  console.log('Signup data:', userData)
-
-  setTimeout(() => (loading.value = false), 2000)
+  try {
+    const res = await updateProfile(userData)
+    // Có thể cập nhật lại thông tin trên form nếu backend trả về user mới
+    const updatedUser = res.data
+    fullname.value = updatedUser.fullname || ''
+    email.value = updatedUser.email || ''
+    phonenumber.value = updatedUser.phonenumber || ''
+    address.value = updatedUser.address || ''
+    //reload page
+    location.reload()
+    // Không set password khi cập nhật
+    // Hiển thị thông báo thành công nếu muốn
+  } catch (error) {
+    console.error('Lỗi cập nhật thông tin:', error)
+  }
+  loading.value = false
 }
 
 function required(v) {

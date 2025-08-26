@@ -54,7 +54,7 @@
             </template>
           </v-select>
           <v-divider>
-            <v-btn variant="elevated" color="success">
+            <v-btn variant="elevated" color="success" @click="exportProductDetails">
               <v-icon color="#fffa">mdi-microsoft-excel</v-icon>
               Excel
             </v-btn>
@@ -109,6 +109,24 @@ import { useRoute, useRouter } from 'vue-router'
 import { getProductDetails, deleteProductDetail } from '@/api/productDetailApi'
 import type { ProductDetailDTO } from '@/types/productDetailDTO'
 import { allColors } from '@/constants/allColors'
+import { exportJsonToExcel } from '@/utils/exportExcel'
+
+function exportProductDetails() {
+  if (!details.value.length) {
+    alert.value = { show: true, type: 'error', message: 'Không có dữ liệu để xuất Excel' }
+    return
+  }
+
+  const exportData = details.value.map((d) => ({
+    'ID': d.id,
+    'Mã biến thể': d.productDetailCode,
+    'Màu sắc': allColors.find((c) => c.value === d.style)?.label || d.style,
+    'Size': d.size,
+    'Tồn kho': d.inventoryQuantity
+  }))
+
+  exportJsonToExcel(exportData, 'product-details.xlsx', 'ProductDetails')
+}
 
 const route = useRoute()
 const router = useRouter()

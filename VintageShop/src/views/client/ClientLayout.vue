@@ -163,7 +163,7 @@
               <li>
                 <a @click="router.push({ name: 'cart' })"
                   ><v-icon>mdi-cart-outline</v-icon>
-                  <!-- <div class="tip">{{ cartItemCount }}</div> -->
+                  <div class="tip">{{ cartItemCount }}</div>
                 </a>
               </li>
               <li>
@@ -275,11 +275,13 @@ import '@/assets/css/owl.carousel.min.css'
 import '@/assets/css/slicknav.min.css'
 import '@/assets/css/style.css'
 
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { isAuthenticated, getUserInfo, logout as authLogout } from '@/utils/auth'
+import { useCartStore } from '@/stores/cart'
 
 const router = useRouter()
-
+const cartStore = useCartStore() 
 // Sử dụng hàm logout từ utils, truyền router để chuyển trang
 const logout = () => {
   authLogout(router)
@@ -300,12 +302,12 @@ const closeOffcanvas = () => {
   offcanvasActive.value = false
 }
 //count cartItem trong localStorage
-const cartItemCount = ref(0)
-// Kiểm tra số lượng sản phẩm trong giỏ hàng
-const checkCartItemCount = () => {
-  const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]')
-  cartItemCount.value = cartItems.length
-}
+const cartItemCount = computed(() => cartStore.cartItemCount)
+
+onMounted(() => {
+  cartStore.loadCart()
+})
+
 </script>
 
 <style scoped>

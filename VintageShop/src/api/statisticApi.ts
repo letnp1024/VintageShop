@@ -1,42 +1,63 @@
 import axios from 'axios'
+import type { ChartItem } from '@/types/chartItem'
 
 const API_URL = 'http://localhost:8080/api/statistics'
 
-// Lấy tổng quan doanh thu
-export const getSummary = () => axios.get(`${API_URL}/summary`)
+// Tổng quan doanh thu
+export const getSummary = () => axios.get<ChartItem>(`${API_URL}/summary`)
 
-// Lấy doanh thu hôm nay
-export const getRevenueToday = () => axios.get(`${API_URL}/revenue-today`)
+// Doanh thu hôm nay
+export const getRevenueToday = () => axios.get<ChartItem>(`${API_URL}/revenue-today`)
 
-// Lấy doanh thu theo tháng
+// Doanh thu theo tháng
 export const getRevenueByMonth = (month: number, year: number) =>
-  axios.get(`${API_URL}/revenue-month`, { params: { month, year } })
+  axios.get<ChartItem>(`${API_URL}/revenue-month`, { params: { month, year } })
 
-// Lấy doanh thu theo năm
+// Doanh thu theo năm
 export const getRevenueByYear = (year: number) =>
-  axios.get(`${API_URL}/revenue-year`, { params: { year } })
+  axios.get<ChartItem>(`${API_URL}/revenue-year`, { params: { year } })
 
-// Lấy doanh thu theo khoảng thời gian
+// Doanh thu theo ngày
 export const getRevenueByDate = (startDate: string, endDate: string) =>
-  axios.get(`${API_URL}/revenue-date`, { params: { startDate, endDate } })
+  axios.get<ChartItem>(`${API_URL}/revenue-date`, { params: { startDate, endDate } })
 
-// Lấy sản phẩm bán chạy nhất
+// Chart doanh thu tổng
+export const getAllRevenueChart = () =>
+  axios.get<ChartItem[]>(`${API_URL}/chart-all`)
+
+// Chart doanh thu theo tháng
+export const getRevenueMonthChart = () =>
+  axios.get<ChartItem[]>(`${API_URL}/chart-month`)
+
+// Chart doanh thu theo năm
+export const getRevenueYearChart = (year: number) =>
+  axios.get<ChartItem[]>(`${API_URL}/chart-year`, { params: { year } })
+
+// Chart doanh thu theo ngày
+export const getRevenueByDateChart = (startDate: string, endDate: string) =>
+  axios.get<ChartItem[]>(`${API_URL}/chart-date`, { params: { startDate, endDate } })
+
+// Chart doanh thu theo giờ
+export const getRevenueHourChart = () =>
+  axios.get<ChartItem[]>(`${API_URL}/chart-hour`)
+
+// Sản phẩm bán chạy nhất
 export const getTopSellingProducts = (limit: number) =>
   axios.get(`${API_URL}/top-selling`, { params: { limit } })
 
-// Lấy sản phẩm bán ít nhất
+// Sản phẩm bán ít nhất
 export const getLowestSellingProducts = (limit: number) =>
   axios.get(`${API_URL}/lowest-selling`, { params: { limit } })
 
-// Lấy sản phẩm bán chạy nhất theo khoảng thời gian
+// Sản phẩm bán chạy nhất theo ngày
 export const getTopSellingProductsByDate = (startDate: string, endDate: string, limit: number) =>
   axios.get(`${API_URL}/top-selling-by-date`, { params: { startDate, endDate, limit } })
 
-// Lấy sản phẩm bán ít nhất theo khoảng thời gian
+// Sản phẩm bán ít nhất theo ngày
 export const getLowestSellingProductsByDate = (startDate: string, endDate: string, limit: number) =>
   axios.get(`${API_URL}/lowest-selling-by-date`, { params: { startDate, endDate, limit } })
 
-// Lấy sản phẩm tồn kho thấp
+// Sản phẩm tồn kho thấp
 export const getLowStockProducts = (threshold: number) =>
   axios.get(`${API_URL}/low-stock`, { params: { threshold } })
 

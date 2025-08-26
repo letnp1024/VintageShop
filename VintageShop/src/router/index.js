@@ -56,6 +56,41 @@ const router = createRouter({
           component: () => import('@/views/admin/Dashboard.vue'),
         },
         {
+          path: 'users',
+          name: 'user-index',
+          component: () => import('@/views/admin/user/Index.vue'),
+        },
+        {
+          path: 'category',
+          name: 'category-index',
+          component: () => import('@/views/admin/category/Index.vue'),
+        },
+        {
+          path: 'category/create',
+          name: 'category-create',
+          component: () => import('@/views/admin/category/Create.vue'),
+        },
+        {
+          path: 'category/:id/edit',
+          name: 'category-edit',
+          component: () => import('@/views/admin/category/Edit.vue'),
+        },
+        {
+          path: 'vouchers',
+          name: 'voucher-index',
+          component: () => import('@/views/admin/voucher/Index.vue'),
+        },
+        {
+          path: 'vouchers/create',
+          name: 'voucher-create',
+          component: () => import('@/views/admin/voucher/Create.vue'),
+        },
+        {
+          path: 'vouchers/:id/edit',
+          name: 'voucher-edit',
+          component: () => import('@/views/admin/voucher/Edit.vue'),
+        },
+        {
           path: 'products',
           name: 'product-index',
           component: () => import('@/views/admin/products/Index.vue'),

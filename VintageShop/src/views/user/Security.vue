@@ -7,19 +7,6 @@
   >
     <v-form v-model="form" @submit.prevent="onSubmit">
       <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field
-            density="compact"
-            variant="plain"
-            prepend-icon="mdi-pencil"
-            v-model="username"
-            :readonly="loading"
-            :rules="[required]"
-            class="mb-2"
-            label="Tên đăng nhập"
-            clearable
-          ></v-text-field>
-        </v-col>
         <v-col cols="12" md="3">
           <v-btn variant="text" color="primary"> Đổi tên đăng nhập </v-btn>
         </v-col>

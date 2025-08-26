@@ -54,7 +54,7 @@
             </template>
           </v-select>
           <v-divider>
-            <v-btn variant="elevated" color="success">
+            <v-btn variant="elevated" color="success" @click="exportProducts">
               <v-icon color="#fffa">mdi-microsoft-excel</v-icon>
               Excel
             </v-btn>
@@ -162,6 +162,28 @@ import {
   unFeatureProduct,
 } from '@/api/productApi'
 import type { ProductDTO } from '@/types/productDTO'
+import { exportJsonToExcel } from '@/utils/exportExcel'
+
+function exportProducts() {
+  if (!products.value.length) {
+    alert.value = { show: true, type: 'error', message: 'Không có dữ liệu để xuất Excel' }
+    return
+  }
+
+  const exportData = products.value.map((p) => ({
+    'ID': p.id,
+    'Mã SP': p.productCode,
+    'Tên sản phẩm': p.productName,
+    'Thương hiệu': p.brand,
+    'Loại': p.categoryName,
+    'Người dùng': p.userType,
+    'Chất liệu': p.material,
+    'Giá': p.price,
+    'Nổi bật': p.isFeatured ? 'Nổi bật' : '',
+  }))
+
+  exportJsonToExcel(exportData, 'products.xlsx', 'Products')
+}
 
 const route = useRoute()
 const router = useRouter()

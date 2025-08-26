@@ -6,8 +6,33 @@ import type { InvoiceDetailDTO } from '@/types/invoiceDetailDTO'
 import type { InvoiceDTO } from '@/types/invoiceDTO'
 import { allColors } from '@/constants/allColors'
 import { allInvoiceStatus } from '@/constants/allInvoiceStatus'
-import { Value } from 'sass'
+import { exportJsonToExcel } from '@/utils/exportExcel'
+import { exportInvoicePDF } from "@/utils/invoicePrint"
 
+function infoInvoicePDF() {
+  if (!invoice.value || !details.value.length) return
+  exportInvoicePDF(invoice.value, details.value)
+}
+
+function exportInvoiceDetails() {
+  if (!details.value.length) {
+    alert.value = { show: true, type: 'error', message: 'Không có dữ liệu để xuất Excel' }
+    return
+  }
+
+  const exportData = details.value.map((d) => ({
+    'ID': d.id,
+    'Mã biến thể': d.productDetailCode,
+    'Tên sản phẩm': d.productName,
+    'Số lượng': d.quantity,
+    'Đơn giá': d.price,
+    'Thành tiền': d.totalPrice,
+    'Size': d.size,
+    'Màu sắc': getColorLabel(d.style)
+  }))
+
+  exportJsonToExcel(exportData, 'invoice-details.xlsx', 'InvoiceDetails')
+}
 const route = useRoute()
 const search = ref('')
 const alert = ref<{ show: boolean; type: 'success' | 'error'; message: string }>({
@@ -232,7 +257,7 @@ const goToStep = (xstep: number) => {
             </template>
           </v-select>
           <v-divider>
-            <v-btn variant="elevated" color="success">
+            <v-btn variant="elevated" color="success" @click="exportInvoiceDetails">
               <v-icon color="#fffa">mdi-microsoft-excel</v-icon>
               Excel
             </v-btn>
@@ -526,6 +551,12 @@ const goToStep = (xstep: number) => {
           </div>
         </v-card-text>
       </v-card>
+<div class="d-flex justify-end pa-2">
+  <v-btn color="red" @click="infoInvoicePDF()">
+    <v-icon left>mdi-file-pdf-box</v-icon>
+    Xuất PDF thông tin hóa đơn
+  </v-btn>
+</div>
     </v-col>
   </v-container>
 </template>

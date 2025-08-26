@@ -35,15 +35,25 @@
                 type="text"
                 placeholder="Nhập mã voucher"
                 append-inner-icon=""
+                v-model="voucherCode"
               >
                 <template #append-inner>
-                  <v-btn color="#ffc857" class="ml-2" size="large" rounded>
+                  <v-btn color="#ffc857" class="ml-2" size="large" rounded @click="applyVoucher">
                     <v-icon>mdi-tag </v-icon>
                     <span class="ml-2">Sử dụng</span>
                   </v-btn>
                 </template>
               </v-text-field>
-            </div>
+              <span 
+                v-if="voucherAlert.show" 
+                :class="{
+                  'text-success': voucherAlert.type === 'success',
+                  'text-error': voucherAlert.type === 'error'
+                }"
+              >
+                {{ voucherAlert.message }}
+              </span>
+              </div>
             <h5>Chi tiết thanh toán</h5>
             <v-row>
               <v-col cols="12">
@@ -150,12 +160,16 @@ import ClientLayout from './ClientLayout.vue'
 import { getUserInfo } from '@/utils/auth'
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import { getProductDetailByCode, checkoutOrder, getMyInfo } from '@/api/checkoutApi'
+import { getProductDetailByCode, checkoutOrder, getMyInfo, getVoucherByCode } from '@/api/checkoutApi'
 import type { InputCartItem, InvoiceInfo, CheckoutRequest } from '@/types/checkoutRequest'
 import { createVNPayPayment } from '@/api/paymentApi'
 import type { ProductDetailDTO } from '@/types/productDetailDTO'
 import type { UserDTO } from '@/types/userDTO'
 import type { InvoiceDTO } from '@/types/invoiceDTO'
+import type { Voucher } from '@/types/voucher'
+import { useCartStore } from '@/stores/cart'
+
+const cartStore = useCartStore()
 
 const isUploading = ref(false)
 const alert = ref<{ show: boolean; type: 'success' | 'error'; message: string }>({
@@ -174,7 +188,13 @@ const cartList = ref<CartProduct[]>([])
 const subTotal = ref(0)
 const discount = ref(0)
 const total = ref(0)
-
+const voucher = ref<Voucher | null>(null)
+const voucherCode = ref<string>('')
+const voucherAlert = ref<{ show: boolean; type: 'success' | 'error'; message: string }>({
+  show: false,
+  type: 'success',
+  message: '',
+})
 const user = ref<UserDTO | null>(null)
 const methodPayment = ref<number>(1) // 1: Tiền mặt, 2: VNPay
 // Thông tin hóa đơn và đơn hàng
@@ -230,7 +250,40 @@ onMounted(async () => {
       user.value = null
     }
   }
+  
 })
+
+// Lấy thông tin voucher theo mã
+
+async function applyVoucher() {
+  if (!voucherCode.value) {
+    voucherAlert.value = { show: true, type: 'error', message: 'Nhập mã voucher' }
+    return
+  }
+
+  try {
+    const res = await getVoucherByCode(voucherCode.value)
+    voucher.value = res.data
+
+    // Tính lại discount và total
+    const discountPercentage = voucher.value.discountPercentage ?? 0
+    discount.value = (subTotal.value * discountPercentage) / 100
+    total.value = subTotal.value - discount.value
+    invoiceInfo.value.voucherId = voucher.value.id ?? null
+
+    voucherAlert.value = { show: true, type: 'success', message: 'Áp dụng voucher thành công (giảm ' + discountPercentage + '%)' }
+  } catch (error: any) {
+    voucher.value = null
+    discount.value = 0
+    total.value = subTotal.value
+    invoiceInfo.value.voucherId = null
+
+    const backendMsg = error.response?.data?.error || error.message || 'Có lỗi xảy ra!'
+    voucherAlert.value = { show: true, type: 'error', message: backendMsg }
+  }
+}
+
+
 const fetchVNPayUrl = async (amount: number, invoiceCode: string) => {
   try {
     // Gọi API tạo link thanh toán VNPay
@@ -277,6 +330,7 @@ async function submitCheckout() {
         const cartArr = JSON.parse(cartStr)
         const newCart = cartArr.filter((item: any) => !item.selected)
         localStorage.setItem('cart', JSON.stringify(newCart))
+        cartStore.loadCart() // Cập nhật lại giỏ hàng trong store
       }
     } catch {}
     if (Number(methodPayment.value) === 2) {
@@ -318,14 +372,4 @@ async function submitCheckout() {
 function formatCurrency(value) {
   return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
 }
-
-import shop1 from '@/assets/img/shop/shop-1.jpg'
-import shop2 from '@/assets/img/shop/shop-2.jpg'
-import shop3 from '@/assets/img/shop/shop-3.jpg'
-import shop4 from '@/assets/img/shop/shop-4.jpg'
-import shop5 from '@/assets/img/shop/shop-5.jpg'
-import shop6 from '@/assets/img/shop/shop-6.jpg'
-import shop7 from '@/assets/img/shop/shop-7.jpg'
-import shop8 from '@/assets/img/shop/shop-8.jpg'
-import shop9 from '@/assets/img/shop/shop-9.jpg'
 </script>

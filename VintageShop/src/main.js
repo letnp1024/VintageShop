@@ -12,9 +12,13 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import VueApexCharts from 'vue3-apexcharts'
+import { VDateInput } from 'vuetify/labs/VDateInput'
 
 const vuetify = createVuetify({
-  components,
+    components: {
+    ...components,
+    VDateInput, // 👈 thêm dòng này
+  },
   directives,
     icons: {
     defaultSet: 'mdi', // <-- Rất quan trọng

@@ -110,35 +110,16 @@
   <!-- Shop Cart Section End -->
 </template>
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { getProductDetailByCode } from '@/api/checkoutApi'
-import type { InputCartItem } from '@/types/checkoutRequest'
-import type { ProductDetailDTO } from '@/types/productDetailDTO'
+import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
+import { useCartStore } from '@/stores/cart' // import store
 import { allColors } from '@/constants/allColors'
 
-/* --------------------------
-  Khai báo types và state
--------------------------- */
-interface CartProduct {
-  productDetail: ProductDetailDTO
-  cartItem: InputCartItem
-}
+// Lấy store
+const cartStore = useCartStore()
+const { cartList, subTotalPrice, totalPrice } = storeToRefs(cartStore)
 
-const cartList = ref<CartProduct[]>([])
-const subTotalPrice = ref(0)
-const totalPrice = ref(0)
-
-/* --------------------------
-  Hàm format & xử lý dữ liệu
--------------------------- */
-
-// Lấy nhãn màu từ mã màu
-const getColorLabel = (style: string): string => {
-  const found = allColors.find((c) => c.value === style)
-  return found ? found.label : style
-}
-
-// Format tiền VND
+// Hàm format tiền VND
 const formatCurrency = (value: number): string => {
   return value.toLocaleString('vi-VN', {
     style: 'currency',
@@ -146,87 +127,23 @@ const formatCurrency = (value: number): string => {
   })
 }
 
+// Lấy nhãn màu từ mã màu
+const getColorLabel = (style: string): string => {
+  const found = allColors.find((c) => c.value === style)
+  return found ? found.label : style
+}
+
 // Xóa sản phẩm khỏi giỏ
 const removeItem = (index: number) => {
-  cartList.value.splice(index, 1)
-  updateLocalStorage()
+  cartStore.removeItem(index)
 }
 
-// Cập nhật localStorage từ cartList hiện tại
-const updateLocalStorage = () => {
-  const newCart = cartList.value.map((item) => item.cartItem)
-  localStorage.setItem('cart', JSON.stringify(newCart))
-}
-
-/* --------------------------
-  Fetch dữ liệu khi mounted
--------------------------- */
-onMounted(async () => {
-  let cart: InputCartItem[] = []
-  try {
-    const cartStr = localStorage.getItem('cart')
-    if (cartStr) cart = JSON.parse(cartStr)
-  } catch (e) {
-    console.warn('Lỗi khi đọc localStorage:', e)
-  }
-
-  const promises = cart.map(async (item) => {
-    if (!item.productDetailCode || item.quantity <= 0) return null
-
-    try {
-      const res = await getProductDetailByCode(item.productDetailCode)
-      const productDetail = res.data as ProductDetailDTO
-
-      // Giới hạn số lượng nếu vượt quá tồn kho
-      if (productDetail.inventoryQuantity < item.quantity) {
-        item.quantity = productDetail.inventoryQuantity
-      }
-
-      return { productDetail, cartItem: item }
-    } catch (error) {
-      console.warn('Không thể lấy chi tiết sản phẩm:', error)
-      return null
-    }
-  })
-
-  const resolved = await Promise.all(promises)
-  cartList.value = resolved.filter((item): item is CartProduct => item !== null)
+// Fetch dữ liệu khi mounted
+onMounted(() => {
+  cartStore.loadCart() // store tự lo đọc localStorage + gọi API
 })
-
-/* --------------------------
-  Watch cartList => cập nhật tổng tiền và localStorage
--------------------------- */
-watch(
-  cartList,
-  (newList) => {
-    let subtotal = 0
-    let total = 0
-
-    for (const item of newList) {
-      if (!item || !item.productDetail) continue
-
-      const inventory = item.productDetail.inventoryQuantity || 0
-      const price = item.productDetail.productPrice ?? 0
-
-      // Kiểm tra số lượng vượt quá tồn kho
-      if (item.cartItem.quantity > inventory) {
-        item.cartItem.quantity = inventory
-      }
-
-      if (item.cartItem.selected) {
-        subtotal += item.cartItem.quantity * price
-      }
-      total += item.cartItem.quantity * price
-    }
-
-    subTotalPrice.value = subtotal
-    totalPrice.value = total
-
-    updateLocalStorage()
-  },
-  { deep: true },
-)
 </script>
+
 
 <style scoped>
 .inventory-info {

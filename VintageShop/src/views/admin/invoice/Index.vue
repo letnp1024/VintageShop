@@ -64,7 +64,7 @@
             </template>
           </v-select>
           <v-divider>
-            <v-btn variant="elevated" color="success">
+            <v-btn variant="elevated" color="success" @click="exportInvoices">
               <v-icon color="#fffa">mdi-microsoft-excel</v-icon>
               Excel
             </v-btn>
@@ -140,6 +140,31 @@ import { useRouter } from 'vue-router'
 import { getAllInvoices } from '@/api/invoiceApi'
 import { allInvoiceStatus } from '@/constants/allInvoiceStatus'
 import type { InvoiceDTO } from '@/types/invoiceDTO'
+import { exportJsonToExcel } from '@/utils/exportExcel'
+
+function exportInvoices() {
+  if (!invoices.value.length) {
+    alert.value = { show: true, type: 'error', message: 'Không có dữ liệu để xuất Excel' }
+    return
+  }
+
+  const exportData = invoices.value.map((c) => ({
+    'Mã hóa đơn': c.invoiceCode,
+    'Khách hàng': c.fullname,
+    'SĐT': c.phonenumber,
+    'Email': c.email,
+    'Địa chỉ': c.deliveryAddress,
+    'Ngày tạo': c.creationDate,
+    'Phí ship': c.shippingFee,
+    'Voucher': c.voucherId,
+    'Giảm giá': c.discountAmount,
+    'Tổng tiền': c.totalAmount,
+    'Nhân viên': c.assignedStaffId,
+    'Trạng thái': getStatusInfo(c.status).label
+  }))
+
+  exportJsonToExcel(exportData, 'invoices.xlsx', 'Invoices')
+}
 
 const tab = ref('one')
 const router = useRouter()

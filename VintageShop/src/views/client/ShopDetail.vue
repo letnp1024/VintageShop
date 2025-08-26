@@ -245,10 +245,9 @@ import PickColor from '@/components/client/PickColor.vue'
 import p1 from '@/assets/img/test/p1.png'
 
 // Assets - Sản phẩm liên quan
-import rp1 from '@/assets/img/product/related/rp-1.jpg'
-import rp2 from '@/assets/img/product/related/rp-2.jpg'
-import rp3 from '@/assets/img/product/related/rp-3.jpg'
-import rp4 from '@/assets/img/product/related/rp-4.jpg'
+import { useCartStore } from '@/stores/cart'
+
+const cartStore = useCartStore()
 // ==== State và interface ====
 // Hàm định dạng giá sản phẩm
 const formatProductPrice = (price: number): string => {
@@ -461,45 +460,34 @@ function handleAddToCart() {
         type: 'error',
         message: 'Số lượng mua vượt quá tồn kho. Đã điều chỉnh về tối đa!',
       }
-      setTimeout(() => {
-        alert.value.show = false
-      }, 2000)
+      setTimeout(() => (alert.value.show = false), 2000)
       return
     }
+
     const code = selectedProductDetail.value.productDetailCode || selectedProductDetail.value.id
     const quantity = orderQuantity.value
-    // Lấy cart hiện tại từ localStorage (nếu có)
-    let cart: InputCartItem[] = []
-    try {
-      const cartStr = localStorage.getItem('cart')
-      if (cartStr) cart = JSON.parse(cartStr)
-    } catch {}
-    // Kiểm tra đã có sản phẩm này chưa, nếu có thì cộng dồn số lượng
-    const idx = cart.findIndex((item) => item.productDetailCode === code)
-    if (idx !== -1) {
-      cart[idx].quantity += quantity
-    } else {
-      cart.push({ productDetailCode: String(code), quantity })
-    }
-    localStorage.setItem('cart', JSON.stringify(cart))
+
+    cartStore.addItem({
+      productDetailCode: String(code),
+      quantity,
+      selected: true, // nếu có field này
+    })
+
     console.log('Add to cart:', { code, quantity })
+
     alert.value = {
       show: true,
       type: 'success',
       message: 'Đã thêm vào giỏ hàng!',
     }
-    setTimeout(() => {
-      alert.value.show = false
-    }, 1500)
+    setTimeout(() => (alert.value.show = false), 1500)
   } else {
     alert.value = {
       show: true,
       type: 'error',
       message: 'Vui lòng chọn đủ thuộc tính và số lượng hợp lệ trước khi thêm vào giỏ hàng.',
     }
-    setTimeout(() => {
-      alert.value.show = false
-    }, 2000)
+    setTimeout(() => (alert.value.show = false), 2000)
   }
 }
 //Tạo các hàm từ api dưới đây

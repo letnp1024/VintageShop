@@ -49,18 +49,4 @@ export const allInvoiceStatus: InvoiceStatus[] = [
     labelAdmin: 'Khách hàng đã thanh toán đơn hàng',
     color: 'success', // xanh lá
   },
-  {
-    icon: 'mdi-backup-restore',
-    value: 6,
-    labelClient: 'Đổi trả hàng',
-    labelAdmin: 'Khách hàng muốn đổi trả hàng',
-    color: 'red', // xanh nhạt
-  },
-  {
-    icon: 'mdi-cancel',
-    value: 7,
-    labelClient: 'Đã hoàn hàng thành công',
-    labelAdmin: 'Cửa hàng đã nhận lại hàng và hoàn tiền (nếu đã thanh toán)',
-    color: 'gray', // xanh lá
-  },
 ]

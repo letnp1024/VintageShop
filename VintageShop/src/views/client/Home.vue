@@ -5,17 +5,17 @@
       <div class="row">
         <v-carousel :show-arrows="false" cycle hide-delimiter-background height="100vh">
           <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+            src="https://im.uniqlo.com/global-cms/spa/res2514642e4acd224618d7572741f7fe2bfr.jpg"
             cover
           ></v-carousel-item>
 
           <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/hotel.jpg"
+            src="https://im.uniqlo.com/global-cms/spa/res939e3131fed68a060a84695ddbbd0b22fr.jpg"
             cover
           ></v-carousel-item>
 
           <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+            src="https://im.uniqlo.com/global-cms/spa/resdb9b8e52d1538549ba1049f81c686360fr.jpg"
             cover
           ></v-carousel-item>
         </v-carousel>
@@ -337,17 +337,17 @@
       <div class="row">
         <v-carousel show-arrows="hover" cycle hide-delimiter-background height="70vh">
           <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+            src="https://im.uniqlo.com/global-cms/spa/res62a8dd1e16d1115111958fdfd4b64be1fr.jpg"
             cover
           ></v-carousel-item>
 
           <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/hotel.jpg"
+            src="https://im.uniqlo.com/global-cms/spa/res7cf1dc9fd181377ea14b40ed493ef4a0fr.jpg"
             cover
           ></v-carousel-item>
 
           <v-carousel-item
-            src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+            src="https://im.uniqlo.com/global-cms/spa/resed66aec773af17044fac4822bda51576fr.jpg"
             cover
           ></v-carousel-item>
         </v-carousel>

@@ -17,7 +17,13 @@
               <v-divider></v-divider>
 
               <v-list :lines="false" density="compact" nav>
-                <v-list-item v-for="(item, i) in items" :key="i" :value="item" color="#4f77c4">
+                 <v-list-item
+                    v-for="(item, i) in items"
+                    :key="i"
+                    :to="{ name: item.name }"
+                    link
+                    color="#4f77c4"
+                  >
                   <template v-slot:prepend>
                     <v-icon :icon="item.icon"></v-icon>
                   </template>
@@ -37,13 +43,14 @@
   </div>
 </template>
 <script setup>
+import { logout } from '@/utils/auth';
 const items = [
-  { text: 'Tài khoản', icon: 'mdi-account' }, // Thông tin tài khoản cá nhân
-  { text: 'Bảo mật', icon: 'mdi-key' }, // Bảo mật, mật khẩu
-  { text: 'Lịch sử hóa đơn', icon: 'mdi-file-document-outline' }, // Lịch sử đơn hàng
-  { text: 'Danh sách yêu thích', icon: 'mdi-heart-outline' }, // Yêu thích
-  { text: 'Thông báo', icon: 'mdi-bell-outline' }, // Thông báo
-  { text: 'Đăng xuất', icon: 'mdi-logout' }, // Đăng xuất
+  { text: 'Tài khoản', icon: 'mdi-account', name: 'user-profile' }, 
+  { text: 'Bảo mật', icon: 'mdi-key', name: 'user-security' }, 
+  { text: 'Lịch sử hóa đơn', icon: 'mdi-file-document-outline', name: 'user-orders' }, 
+  // { text: 'Danh sách yêu thích', icon: 'mdi-heart-outline', name: 'user-favorites' }, 
+  // { text: 'Thông báo', icon: 'mdi-bell-outline', name: 'user-notifications' }, 
+  // { text: 'Đăng xuất', icon: 'mdi-logout', name: 'logout' }, 
 ]
 </script>
 <style lang="css">
